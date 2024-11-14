@@ -1,0 +1,370 @@
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.event.KeyListener;
+import javax.swing.JPanel;
+
+
+
+
+public class GamePanel extends JPanel implements Runnable{
+
+	final int originalTitleSize = 10;
+	final int scale = 3;
+	
+	public final int tileSize = originalTitleSize * scale;
+	final int maxScreenCol = 16;
+	final int maxScreenRow = 12;
+	final int screenWidth = tileSize * maxScreenCol;
+	final int screenHeight = tileSize * maxScreenRow;
+	
+	int FPS = 60;
+	KeyHendler keyH = new KeyHendler();
+	Thread gameThread;
+	Player player - new Player(this, keyH)
+	
+	int playerX = 100;
+	int playerY = 100;
+	int playerSpeed = 4;
+	
+	
+	public GamePanel() {
+		
+		this.setPreferredSize(new Dimension(screenWidth, screenHeight));
+		this.setBackground(Color.black);
+		this.setDoubleBuffered(true);
+		this.addKeyListener(keyH);
+		this.setFocusable(true);
+		
+		
+	}
+	
+	
+	public void startGameThread() {
+		gameThread = new Thread(this);
+		gameThread.start();
+	}
+
+
+	@Override
+	public void run() {
+		double drawInterval = 1000000000/FPS;
+		double nextDrawTime = System.nanoTime() + drawInterval;
+		while(gameThread != null) {
+			update();
+			
+			repaint();
+			
+			
+			try {
+			double remainingTime = nextDrawTime - System.nanoTime();
+			remainingTime = remainingTime/1000000;
+			
+			if(remainingTime <0 ) {
+				remainingTime = 0;
+			}
+				
+			Thread.sleep((long) remainingTime);
+			 nextDrawTime += drawInterval;
+			}catch(InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+		public void update() {
+			
+			
+		
+	}
+	
+	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
+		
+		Graphics2D g2 = (Graphics2D)g;
+		
+		g2.setColor(Color.white);
+		
+		g2.fillRect(playerX, playerY, tileSize, tileSize);
+		
+		g2.dispose();
+	}
+}
+
+
+package main;
+
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+
+public class KeyHendler implements KeyListener{
+
+	public boolean upPressed,downPressed,leftPressed,rightPressed;
+	
+	@Override
+	public void keyTyped(KeyEvent e) {
+
+		
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+			int code = e.getKeyCode();
+		if(code == KeyEvent.VK_W) {
+			upPressed = true;
+		}
+		if(code == KeyEvent.VK_S) {
+			downPressed = true;
+		}
+		if(code == KeyEvent.VK_A) {
+			leftPressed = true;
+		}
+		if(code == KeyEvent.VK_D) {
+			rightPressed = true;
+		}
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+
+		int code = e.getKeyCode();
+		if(code == KeyEvent.VK_W) {
+			upPressed = false;
+		}
+		if(code == KeyEvent.VK_S) {
+			downPressed = false;
+		}
+		if(code == KeyEvent.VK_A) {
+			leftPressed = false;
+		}
+		if(code == KeyEvent.VK_D) {
+			rightPressed = false;
+		}
+	}
+	
+	
+
+}
+
+
+package main;
+
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.event.KeyListener;
+import javax.swing.JPanel;
+
+
+
+
+public class GamePanel extends JPanel implements Runnable{
+
+	final int originalTitleSize = 10;
+	final int scale = 3;
+	
+	final int tileSize = originalTitleSize * scale;
+	final int maxScreenCol = 16;
+	final int maxScreenRow = 12;
+	final int screenWidth = tileSize * maxScreenCol;
+	final int screenHeight = tileSize * maxScreenRow;
+	
+	int FPS = 60;
+	KeyHendler keyH = new KeyHendler();
+	Thread gameThread;
+	
+	int playerX = 100;
+	int playerY = 100;
+	int playerSpeed = 4;
+	
+	
+	public GamePanel() {
+		
+		this.setPreferredSize(new Dimension(screenWidth, screenHeight));
+		this.setBackground(Color.black);
+		this.setDoubleBuffered(true);
+		this.addKeyListener(keyH);
+		this.setFocusable(true);
+		
+		
+	}
+	
+	
+	public void startGameThread() {
+		gameThread = new Thread(this);
+		gameThread.start();
+	}
+
+
+	@Override
+	public void run() {
+		double drawInterval = 1000000000/FPS;
+		double nextDrawTime = System.nanoTime() + drawInterval;
+		while(gameThread != null) {
+			update();
+			
+			repaint();
+			
+			
+			try {
+			double remainingTime = nextDrawTime - System.nanoTime();
+			remainingTime = remainingTime/1000000;
+			
+			if(remainingTime <0 ) {
+				remainingTime = 0;
+			}
+				
+			Thread.sleep((long) remainingTime);
+			 nextDrawTime += drawInterval;
+			}catch(InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+		public void update() {
+	player.update();
+			
+		
+	}
+	
+	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
+		
+		Graphics2D g2 = (Graphics2D)g;
+		player.draw(g2);
+		g2.dispose();
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+public class Player extends Entity{
+
+	
+	GamePanel gp;
+	KeyHandler keyH;
+	
+	public Player(GamePanel gp, KeyHandler keyH) {
+		this.gp = gp;
+		this.keyH = keyH;
+		
+		setDefaultValues();
+		getPlayerImage();
+	}
+	
+public void setDefaultValues() {
+	x = 100;
+	y = 100;
+	speed = 4;
+	direction = "down";
+	}
+public void getPlayerImage() {
+	try {
+		up1 = ImageIO.read(getClass().getResourceAsStream("/player/boy_up_1.png"));
+		up2 = ImageIO.read(getClass().getResourceAsStream("/player/boy_up_2.png"));
+		down1 = ImageIO.read(getClass().getResourceAsStream("/player/boy_down_1.png"));
+		down2 = ImageIO.read(getClass().getResourceAsStream("/player/boy_down_2.png"));
+		left1 = ImageIO.read(getClass().getResourceAsStream("/player/boy_left_1.png"));
+		left2 = ImageIO.read(getClass().getResourceAsStream("/player/boy_left_2.png"));
+		right1 = ImageIO.read(getClass().getResourceAsStream("/player/boy_right_1.png"));
+		right1 = ImageIO.read(getClass().getResourceAsStream("/player/boy_right_2.png"));
+		
+	} catch(IOException e) {
+		e.printStackTrace()
+	}
+}
+	public void update() {
+		if(keyH.upPressed == true) {
+		direction = "up";
+			y -= speed;
+		}else if(keyH.downPressed) {
+			direction = "down";
+			y += speed;
+		}else if(keyH.rightPressed) {
+			direction = "left";
+			x += speed;
+		}else if(keyH.leftPressed) {
+			direction = "right";
+			x  -= speed;
+		}
+		spriteCounter++;
+		if(spriteCounter > 12) {
+			if(spriteNum == 1) {
+				spriteNum = 2;
+			}
+			else if(spriteNum == 2) {
+				spriteNum = 1;
+			}
+			spriteCounter = 0;
+		}
+	}
+	public void draw(Graphics2d g2) {
+		//g2.setColor(Color.white);
+		//g2.fillRect(x, y, gp.tileSize, gp.tileSize);
+	BufferedImage image = null;
+	
+	switch(direction) {
+	case "up":
+		if(spriteNum == 1) {
+			image = up1;
+		}
+		if(spriteNum == 2) {
+			image = up2;
+		}
+		break;
+	case "down":
+		if(spriteNum == 1) {
+		image = down1;
+		}
+		if(spriteNum == 2) {
+			image = down2;
+		}
+		break;
+	case "left":
+		if(spriteNum == 1) {
+			image = left1;
+		}
+		if(spriteNum == 2) {
+			image = left2;
+		}
+		break;
+	case "right":
+		if(spriteNum == 1) {
+			image = right1;
+		}
+		if(spriteNum == 2) {
+			image = right2;
+		}
+		break;
+	}
+	g2.drawImage(image, x, y, gp.tileSize, gp.tileSize, null);
+	}
+}
+
+
+
+
+
+public class Entity {
+
+	public int x, y;
+	public int speed;
+	
+	public BufferedImage up1, up2, down1, down2, left1, left2, right1, right2;
+	public String direction;
+	
+	public int spriteCounter = 0;
+	public int spriteNum = 1;
+}
+
+
